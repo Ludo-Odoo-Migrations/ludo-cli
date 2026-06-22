@@ -1,0 +1,29 @@
+name: ci
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+      - run: uv sync --all-extras
+      - run: uv run ruff check .
+      - run: uv run ruff format --check .
+      - run: uv run mypy src
+
+  isolation-guard:
+    # The public CLI must never import private engine code. Fail the build if it does.
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: No private engine imports
+        run: |
+          if grep -rnE "(import|from) ludo\.(core|actions|tools|storage|llm|knowledge|estimate|odoo|api)" src; then
+            echo "ERROR: public CLI must not import private engine code (ludo.core/actions/tools/...)."
+            exit 1
+          fi
+          echo "OK: no private engine imports."
