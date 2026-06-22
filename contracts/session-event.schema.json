@@ -1,0 +1,49 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "SessionEvent",
+  "description": "Contract B v2 — lifecycle event emitted by ludo-agent. The seam between ludo-agent and apps/api. Breaking v2: kind -> type, new event-type enum, schema_version '2.0', gate_required -> checkpoint_required.",
+  "type": "object",
+  "required": ["session_id", "type", "payload", "at", "schema_version", "checkpoint_required"],
+  "additionalProperties": true,
+  "properties": {
+    "session_id": {
+      "type": "string",
+      "description": "The worker session id (apps stores it as ludo_session_id), or the job id for job-level events before a session is minted."
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "session_started",
+        "session_end",
+        "model_started",
+        "model_completed",
+        "job_started",
+        "job_completed",
+        "job_failed",
+        "turn_started",
+        "turn_completed",
+        "safety_event",
+        "checkpoint_requested"
+      ],
+      "description": "Event type (locked #430-D)"
+    },
+    "payload": {
+      "type": "object",
+      "description": "Type-specific payload (see contract docs)"
+    },
+    "at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO-8601 timestamp"
+    },
+    "schema_version": {
+      "type": "string",
+      "description": "Envelope version (e.g. '2.0')"
+    },
+    "checkpoint_required": {
+      "type": "boolean",
+      "default": false,
+      "description": "Per-event operator review/decision flag (reserved; false for now). Distinct from a resumable state checkpoint."
+    }
+  }
+}
