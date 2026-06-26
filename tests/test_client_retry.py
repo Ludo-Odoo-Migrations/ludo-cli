@@ -4,6 +4,7 @@ Uses httpx.MockTransport to script transient failures; backoff sleeps are stubbe
 tests are instant. Verifies: transient (503/429/connect) replays up to the cap, 4xx never
 replays, and an SSE drop resumes from the last seq via Last-Event-ID.
 """
+
 from __future__ import annotations
 
 import httpx

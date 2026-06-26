@@ -27,8 +27,8 @@ T = TypeVar("T")
 # Retry/backoff (per ludo-init/docs/contracts-consumer-guide.md). Retry ONLY transient
 # failures: connect/timeout (httpx.TransportError) + 429 + 5xx. 4xx (except 429) never retry.
 _TRANSIENT_STATUS = frozenset({429, 500, 502, 503, 504})
-_RETRY_BASE = 0.5   # seconds
-_RETRY_CAP = 30.0   # seconds
+_RETRY_BASE = 0.5  # seconds
+_RETRY_CAP = 30.0  # seconds
 
 
 def _transient_status(exc: BaseException) -> bool:
@@ -52,7 +52,7 @@ def _backoff(attempt: int, retry_after: float | None = None) -> float:
     """Exponential backoff with jitter; a server `Retry-After` wins when given."""
     if retry_after is not None:
         return min(_RETRY_CAP, retry_after)
-    return min(_RETRY_CAP, _RETRY_BASE * (2 ** attempt)) + random.uniform(0, _RETRY_BASE)
+    return min(_RETRY_CAP, _RETRY_BASE * (2**attempt)) + random.uniform(0, _RETRY_BASE)
 
 
 class LudoClient:
