@@ -11,12 +11,12 @@ broker. This client depends only on public HTTP + the vendored contract schemas
 
 from __future__ import annotations
 
-import json
 from collections.abc import Iterator
 from types import TracebackType
 from typing import Any
 
 import httpx
+from ludo_shared import decode_sse
 
 from omg.config import Config
 
@@ -70,27 +70,9 @@ class LudoClient:
                 # .text work instead of throwing ResponseNotRead.
                 resp.read()
                 resp.raise_for_status()
-            seq = 0
-            etype = "message"
-            data_buf: list[str] = []
-            for line in resp.iter_lines():
-                if line == "":  # frame boundary
-                    if data_buf:
-                        raw = "\n".join(data_buf)
-                        try:
-                            payload: Any = json.loads(raw)
-                        except json.JSONDecodeError:
-                            payload = raw
-                        yield (seq, etype, payload)
-                    etype, data_buf = "message", []
-                    continue
-                if line.startswith("id:"):
-                    val = line[3:].strip()
-                    seq = int(val) if val.isdigit() else seq
-                elif line.startswith("event:"):
-                    etype = line[6:].strip()
-                elif line.startswith("data:"):
-                    data_buf.append(line[5:].lstrip())
+            # One canonical SSE codec (vendored ludo_shared). Contract A is SSE
+            # (id:/event:/data:), not NDJSON — see contracts/README.md.
+            yield from decode_sse(resp.iter_lines())
 
     # ── lifecycle ──────────────────────────────────────────────────────
     def close(self) -> None:
