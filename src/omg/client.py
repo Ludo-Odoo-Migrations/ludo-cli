@@ -24,7 +24,7 @@ from omg.config import Config
 
 T = TypeVar("T")
 
-# Retry/backoff (per ludo-init/docs/contracts-consumer-guide.md). Retry ONLY transient
+# Retry/backoff (per agentix/docs/contracts-consumer-guide.md). Retry ONLY transient
 # failures: connect/timeout (httpx.TransportError) + 429 + 5xx. 4xx (except 429) never retry.
 _TRANSIENT_STATUS = frozenset({429, 500, 502, 503, 504})
 _RETRY_BASE = 0.5  # seconds
