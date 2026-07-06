@@ -1,4 +1,4 @@
-# Public contracts — vendored from ludo-init
+# Public contracts — vendored from agentix
 
 The stable seam between this public CLI and the LUDO **gateway** (the single public
 door over the broker). The CLI depends **only** on what's here — never on the agent
@@ -10,7 +10,7 @@ or NATS.
 - `session-event.schema.json` — **Contract B** events the CLI consumes when streaming.
 - `job-message.schema.json` — **Contract B** job payload (reference).
 
-**Source of truth is [`ludo-init/contracts/`](../../ludo-init/contracts/)** (the cross-repo
-hub). These are **vendored copies — do not hand-edit.** Edit the canonical in `ludo-init`,
-then re-vendor; drift is enforced by `ludo-init/scripts/check_contract_drift.py`. Governance:
-[`ludo-init/contracts/README.md`](../../ludo-init/contracts/README.md).
+**Source of truth is [`agentix/contracts/`](../../agentix/contracts/)** (the cross-repo
+hub). These are **vendored copies — do not hand-edit.** Edit the canonical in `agentix`,
+then re-vendor; drift is enforced by `agentix/scripts/check_contract_drift.py`. Governance:
+[`agentix/contracts/README.md`](../../agentix/contracts/README.md).
