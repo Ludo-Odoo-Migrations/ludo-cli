@@ -78,7 +78,7 @@ dev_secret_placeholders:
   VAULT_ENC_SALT: "dev-vault-enc-salt-not-secret"
   SUPERADMIN_PASSWORD: "change-me"
 
-# ── Tooling baseline (see docs/tooling-standards.md) ──────────────────────────
+# ── Tooling baseline (see docs/dev-standards.md) ──────────────────────────
 tooling:
   python: "3.12"
   package_manager: "uv"
