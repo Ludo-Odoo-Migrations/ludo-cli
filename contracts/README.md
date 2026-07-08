@@ -13,4 +13,4 @@ or NATS.
 **Source of truth is [`agentix/contracts/`](../../agentix/contracts/)** (the cross-repo
 hub). These are **vendored copies — do not hand-edit.** Edit the canonical in `agentix`,
 then re-vendor; drift is enforced by `agentix/scripts/check_contract_drift.py`. Governance:
-[`agentix/contracts/README.md`](../../agentix/contracts/README.md).
+`agentix/docs/contracts.md`.

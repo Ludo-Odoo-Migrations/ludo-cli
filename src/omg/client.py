@@ -133,7 +133,7 @@ class LudoClient:
                         resp.read()
                         resp.raise_for_status()
                     # One canonical SSE codec (vendored ludo_shared). Contract A is SSE
-                    # (id:/event:/data:), not NDJSON — see contracts/README.md.
+                    # (id:/event:/data:), not NDJSON — see agentix/docs/contracts.md.
                     for ev_seq, etype, payload in decode_sse(resp.iter_lines()):
                         seq = ev_seq
                         failures = 0  # progress — reset the reconnect budget
