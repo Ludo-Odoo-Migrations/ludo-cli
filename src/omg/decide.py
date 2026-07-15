@@ -116,7 +116,8 @@ def _run_wizard(inventory: ModuleInventory, decisions: dict[str, Decision]) -> N
         current = decisions[facts.name]
         _print_module(facts, current)
         choices = ["p", "s", "a"] if mode == "port-only" else ["p", "r", "s", "a"]
-        legend = "[p]ort / [s]kip / [a]ccept" if mode == "port-only" else "[p]ort / [r]efactor / [s]kip / [a]ccept"
+        # No square brackets in the legend — rich would parse them as markup tags.
+        legend = "p=port / s=skip / a=accept" if mode == "port-only" else "p=port / r=refactor / s=skip / a=accept"
         answer = Prompt.ask(legend, choices=choices, default="a")
         if answer == "a":
             continue  # keep the prefill (existing decision or recommendation)
