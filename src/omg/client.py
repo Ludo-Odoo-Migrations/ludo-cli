@@ -91,6 +91,22 @@ class LudoClient:
 
         return self._with_retry(call)
 
+    def _patch(self, path: str, json_body: dict[str, Any]) -> Any:
+        """PATCH with the same transient-retry policy as reads.
+
+        Only used for idempotent full-replace endpoints (module-decisions):
+        replaying the identical body cannot double-apply, so no
+        Idempotency-Key is needed here. Non-idempotent writes (approve /
+        job submit, P4) must NOT reuse this without one.
+        """
+
+        def call() -> Any:
+            r = self._http.patch(path, json=json_body)
+            r.raise_for_status()
+            return r.json()
+
+        return self._with_retry(call)
+
     def healthz(self) -> dict[str, Any]:
         """Gateway liveness — ``{"ok": true}``."""
         return self._get("/healthz")
@@ -106,6 +122,18 @@ class LudoClient:
     def get_migration(self, migration_id: str) -> dict[str, Any]:
         """One migration's detail (404 if out of scope / not found)."""
         return self._get(f"/api/v1/migrations/{migration_id}")
+
+    def get_module_inventory(self, migration_id: str) -> dict[str, Any]:
+        """The migration's module inventory (``ludo.module-inventory/1``) —
+        custom-module facts + LUDO's per-module recommendation, computed
+        server-side, plus any existing decisions for prefill."""
+        return self._get(f"/api/v1/migrations/{migration_id}/module-inventory")
+
+    def patch_module_decisions(self, migration_id: str, payload: dict[str, Any]) -> dict[str, Any]:
+        """Persist the customer's per-module decisions
+        (``ludo.port-decisions/2``). Full replace — idempotent; 422 carries
+        the server's partition-validation reason."""
+        return self._patch(f"/api/v1/migrations/{migration_id}/module-decisions", payload)
 
     def stream_events(self, migration_id: str, last_event_id: int | None = None) -> Iterator[tuple[int, str, Any]]:
         """Stream the migration's resumable Contract B SSE.

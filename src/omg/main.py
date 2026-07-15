@@ -10,28 +10,20 @@ from __future__ import annotations
 
 import httpx
 import typer
-from rich.console import Console
 from rich.table import Table
 
 from omg import __version__
+from omg._ui import console, fail as _fail
 from omg.client import LudoClient
 from omg.config import load_config
+from omg.decide import modules_app
 
 app = typer.Typer(
     name="omg",
     help="omg — CLI client for LUDO Odoo migrations (transport-only).",
     no_args_is_help=True,
 )
-console = Console()
-
-
-def _fail(exc: httpx.HTTPError) -> None:
-    """Turn a transport error into a clean message + non-zero exit (no traceback)."""
-    if isinstance(exc, httpx.HTTPStatusError):
-        console.print(f"[red]error {exc.response.status_code}:[/red] {exc.response.text.strip()[:200]}")
-    else:
-        console.print(f"[red]cannot reach gateway:[/red] {type(exc).__name__}: {exc}")
-    raise typer.Exit(1)
+app.add_typer(modules_app, name="modules")
 
 
 @app.command()
