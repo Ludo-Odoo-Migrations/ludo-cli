@@ -14,7 +14,8 @@
         "model_started", "model_completed",
         "job_started", "job_completed", "job_failed",
         "turn_started", "turn_completed",
-        "safety_event", "checkpoint_requested"
+        "safety_event", "checkpoint_requested",
+        "verify_stage"
       ]
     },
     "payload": { "type": "object" },
