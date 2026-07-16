@@ -27,6 +27,7 @@ def _client(handler: httpx.MockTransport, *, max_retries: int = 3) -> LudoClient
 
 # ── approve ──────────────────────────────────────────────────────────────────
 
+
 def test_approve_sends_idempotency_key() -> None:
     seen: list[str] = []
 
@@ -79,6 +80,7 @@ def test_approve_retries_transient_then_succeeds() -> None:
 
 # ── resume ───────────────────────────────────────────────────────────────────
 
+
 def test_resume_auto_key() -> None:
     seen: list[str] = []
 
@@ -94,11 +96,13 @@ def test_resume_auto_key() -> None:
 
 # ── estimate ─────────────────────────────────────────────────────────────────
 
+
 def test_create_estimate_happy_path() -> None:
     payload_seen: list[dict] = []
 
     def handler(req: httpx.Request) -> httpx.Response:
         import json
+
         payload_seen.append(json.loads(req.content))
         return httpx.Response(
             201,
