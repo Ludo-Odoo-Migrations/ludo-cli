@@ -13,14 +13,17 @@ from rich.console import Console
 console = Console()
 
 
-def fail(exc: httpx.HTTPError) -> None:
-    """Turn a transport error into a clean message + non-zero exit (no traceback).
+def fail(reason: httpx.HTTPError | str) -> None:
+    """Turn a transport error (or a plain reason) into a clean message + non-zero exit.
 
     HTTP errors show the status + the server's reason (the gateway puts
-    validation detail in the body — e.g. a 422 partition problem).
+    validation detail in the body — e.g. a 422 partition problem); a plain
+    string renders as-is (client-side validation, pre-request failures).
     """
-    if isinstance(exc, httpx.HTTPStatusError):
-        console.print(f"[red]error {exc.response.status_code}:[/red] {exc.response.text.strip()[:400]}")
+    if isinstance(reason, str):
+        console.print(f"[red]error:[/red] {reason}")
+    elif isinstance(reason, httpx.HTTPStatusError):
+        console.print(f"[red]error {reason.response.status_code}:[/red] {reason.response.text.strip()[:400]}")
     else:
-        console.print(f"[red]cannot reach gateway:[/red] {type(exc).__name__}: {exc}")
+        console.print(f"[red]cannot reach gateway:[/red] {type(reason).__name__}: {reason}")
     raise typer.Exit(1)
