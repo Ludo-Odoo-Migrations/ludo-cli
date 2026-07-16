@@ -11,7 +11,7 @@ omg  ──▶  gateway (Contract A REST + Contract B SSE)  ──▶  NATS  ─
           public schemas only · no engine code · auth-gated
 ```
 
-The gateway ([`euroblaze/ludo-gateway`](https://github.com/euroblaze/ludo-gateway)) is the
+The gateway ([`Ludo-Odoo-Migrations/ludo-gateway`](https://github.com/Ludo-Odoo-Migrations/ludo-gateway)) is the
 single public door; `omg` never reaches the agent or the broker directly. You point it at
 **your own** deployment's gateway and authenticate; the engine, your Odoo credentials, and
 your data never live in this CLI.
@@ -20,7 +20,7 @@ your data never live in this CLI.
 
 Read commands work against the gateway today (P3); write commands (approve / job submit)
 arrive once the gated broker write path is cleared (P4). Build tracked in
-[ludo-omg#1](https://github.com/euroblaze/ludo-omg/issues/1).
+[ludo-cli#1](https://github.com/Ludo-Odoo-Migrations/ludo-cli/issues/1).
 
 ## Install
 
@@ -53,7 +53,7 @@ omg config              # show resolved config (token redacted)
   ever speaks the gateway's public contracts under [`contracts/`](contracts/).
 - **Public seam.** `contracts/openapi.yaml` (Contract A) and
   `session-event.schema.json` (Contract B) are vendored from the gateway; the source
-  of truth is `euroblaze/ludo-gateway`, published on intentional contract releases.
+  of truth is `Ludo-Odoo-Migrations/ludo-gateway`, published on intentional contract releases.
 
 ## License
 
