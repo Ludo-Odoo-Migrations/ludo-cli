@@ -107,6 +107,30 @@ class LudoClient:
 
         return self._with_retry(call)
 
+    def _patch_write(self, path: str, idempotency_key: str) -> Any:
+        """Non-idempotent PATCH (approve / resume): must carry Idempotency-Key so retries
+        are safe at the JetStream level. 202 = accepted; result arrives on the event stream."""
+
+        def call() -> Any:
+            r = self._http.patch(path, headers={"Idempotency-Key": idempotency_key})
+            r.raise_for_status()
+            return r.json()
+
+        return self._with_retry(call)
+
+    def _post(self, path: str, json_body: dict[str, Any], idempotency_key: str | None = None) -> Any:
+        """POST with optional Idempotency-Key header (for non-idempotent writes)."""
+        extra: dict[str, str] = {}
+        if idempotency_key:
+            extra["Idempotency-Key"] = idempotency_key
+
+        def call() -> Any:
+            r = self._http.post(path, json=json_body, headers=extra or None)
+            r.raise_for_status()
+            return r.json()
+
+        return self._with_retry(call)
+
     def healthz(self) -> dict[str, Any]:
         """Gateway liveness — ``{"ok": true}``."""
         return self._get("/healthz")
@@ -134,6 +158,25 @@ class LudoClient:
         (``ludo.port-decisions/2``). Full replace — idempotent; 422 carries
         the server's partition-validation reason."""
         return self._patch(f"/api/v1/migrations/{migration_id}/module-decisions", payload)
+
+    def approve(self, migration_id: str, idempotency_key: str | None = None) -> dict[str, Any]:
+        """Approve and start a migration (enqueue job). 202 = accepted; follow with
+        stream_events to observe progress. Idempotency-Key deduplicates retries at
+        the JetStream level; auto-generated from migration_id when omitted."""
+        key = idempotency_key or f"{migration_id}:migrate"
+        return self._patch_write(f"/api/v1/migrations/{migration_id}/approve", key)
+
+    def resume(self, migration_id: str, idempotency_key: str | None = None) -> dict[str, Any]:
+        """Resume a paused/checkpointed migration. Same contract as approve."""
+        key = idempotency_key or f"{migration_id}:migrate:resume"
+        return self._patch_write(f"/api/v1/migrations/{migration_id}/resume", key)
+
+    def create_estimate(self, combo: str, src_version: int, tgt_version: int) -> dict[str, Any]:
+        """Request a migration cost estimate (free, may precede signup)."""
+        return self._post(
+            "/api/v1/commerce/estimates",
+            {"combo": combo, "src_version": src_version, "tgt_version": tgt_version},
+        )
 
     def stream_events(self, migration_id: str, last_event_id: int | None = None) -> Iterator[tuple[int, str, Any]]:
         """Stream the migration's resumable Contract B SSE.
