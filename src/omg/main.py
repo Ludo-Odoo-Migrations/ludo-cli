@@ -84,7 +84,9 @@ def events(
 @app.command()
 def approve(
     migration_id: str = typer.Argument(..., help="Migration id to approve and start."),
-    idempotency_key: str = typer.Option("", "--idempotency-key", "-k", help="Override the auto-generated Idempotency-Key."),
+    idempotency_key: str = typer.Option(
+        "", "--idempotency-key", "-k", help="Override the auto-generated Idempotency-Key."
+    ),
     stream: bool = typer.Option(False, "--stream", "-s", help="Stream events after approval until session_end."),
 ) -> None:
     """Approve and start a migration (enqueue the agent job). Result arrives on the event stream.
@@ -113,7 +115,9 @@ def approve(
 @app.command()
 def resume(
     migration_id: str = typer.Argument(..., help="Migration id to resume."),
-    idempotency_key: str = typer.Option("", "--idempotency-key", "-k", help="Override the auto-generated Idempotency-Key."),
+    idempotency_key: str = typer.Option(
+        "", "--idempotency-key", "-k", help="Override the auto-generated Idempotency-Key."
+    ),
     stream: bool = typer.Option(False, "--stream", "-s", help="Stream events after resume until session_end."),
 ) -> None:
     """Resume a paused or checkpointed migration. Same contract as approve.
