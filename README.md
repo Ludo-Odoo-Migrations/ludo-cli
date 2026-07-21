@@ -33,9 +33,17 @@ pipx install .        # from a checkout (PyPI release later)
 `omg` needs to know where your gateway is and how to authenticate:
 
 ```sh
-export LUDO_API_URL=http://10.0.99.1:8080   # your deployment's gateway
-export LUDO_API_TOKEN=…                      # bearer token (anon = 404 on tenant data)
+# Production
+export LUDO_API_URL=https://runludo.com/api/v1
+export LUDO_API_TOKEN=<bearer-token-from-ludo-gateway>
+
+# Local dev (ludo-gateway running on loopback alias)
+export LUDO_API_URL=http://10.0.99.1:8080
+export LUDO_API_TOKEN=<dev-token>
 ```
+
+`omg` never reaches NATS, agentixd, or Odoo directly — all operations go through the
+ludo-gateway REST + SSE API (Contract A / Contract B).
 
 ## Use
 
